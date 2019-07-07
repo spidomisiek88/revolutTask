@@ -7,7 +7,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "account")
 @Data
-public class Account {
+public class AccountEntity {
 
     @Id
     @GeneratedValue
@@ -16,7 +16,11 @@ public class Account {
     private double accountBalance;
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserEntity user;
     @Column(name = "is_delete")
     private int isDelete;
+
+    public boolean isDelete() {
+        return isDelete > 0 ? true : false;
+    }
 }

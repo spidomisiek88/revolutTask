@@ -8,7 +8,7 @@ import java.util.List;
 @Entity
 @Table(name = "user")
 @Data
-public class User {
+public class UserEntity {
 
     @Id
     @GeneratedValue
@@ -18,5 +18,9 @@ public class User {
     private int isDelete;
 
     @OneToMany(mappedBy = "user")
-    List<Account> accounts;
+    List<AccountEntity> accounts;
+
+    public boolean isDelete() {
+        return isDelete > 0 ? true : false;
+    }
 }
