@@ -14,9 +14,9 @@ public interface AccountRepository extends CrudRepository<AccountEntity, Integer
     @Query(nativeQuery = true, value = "SELECT * FROM `account` WHERE `id` = ?1")
     Optional<AccountEntity> findAccountById(int accountId);
 
-    @Query(nativeQuery = true, value = "UPDATE 'account' SET 'account_balance' = ?1 WHERE 'id' = ?2")
+    @Query(nativeQuery = true, value = "UPDATE `account` SET `account_balance` = ?2 WHERE `id` = ?1")
     @Modifying
-    void updateAccoutBallance(double updatedValueOfBalance, int accountId);
+    void updateAccoutBallance(int accountId, double updatedValueOfBalance);
 
     @Query(nativeQuery = true, value = "UPDATE `account` SET `is_delete` = 1 WHERE `id` = ?1")
     @Modifying

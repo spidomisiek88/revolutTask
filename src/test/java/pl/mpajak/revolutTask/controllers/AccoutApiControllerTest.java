@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
-public class AccoutApiController {
+public class AccoutApiControllerTest {
 
     @Mock
     AccountRepository accountRepository;

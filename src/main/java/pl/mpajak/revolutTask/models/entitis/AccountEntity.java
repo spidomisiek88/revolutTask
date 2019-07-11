@@ -3,6 +3,7 @@ package pl.mpajak.revolutTask.models.entitis;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "account")
@@ -22,5 +23,21 @@ public class AccountEntity {
 
     public boolean isDelete() {
         return isDelete > 0 ? true : false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AccountEntity)) return false;
+        AccountEntity that = (AccountEntity) o;
+        return getId() == that.getId() &&
+                Double.compare(that.getAccountBalance(), getAccountBalance()) == 0 &&
+                getIsDelete() == that.getIsDelete() &&
+                getUser().equals(that.getUser());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getAccountBalance(), getUser(), getIsDelete());
     }
 }
