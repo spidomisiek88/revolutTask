@@ -3,7 +3,6 @@ package pl.mpajak.revolutTask.services;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-//import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -15,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.mpajak.revolutTask.models.Services.AccountService;
-import pl.mpajak.revolutTask.models.Services.UserSession;
+import pl.mpajak.revolutTask.models.Services.TransferSession;
 import pl.mpajak.revolutTask.models.entitis.AccountEntity;
 import pl.mpajak.revolutTask.models.entitis.UserEntity;
 import pl.mpajak.revolutTask.models.repositoris.AccountRepository;
@@ -31,7 +30,7 @@ public class AccountServiceTest {
     @Mock
     AccountRepository accountRepository;
     @Mock
-    UserSession userSession;
+    TransferSession userSession;
     @InjectMocks
     AccountService accountService;
     @Autowired
@@ -39,8 +38,8 @@ public class AccountServiceTest {
     UserEntity testUser;
     AccountEntity firstTestAccount;
     AccountEntity secondTestAccount;
+    TransferSession testTransferSession;
 
-//    @BeforeEach
     @Before
     public void init() {
 
@@ -63,11 +62,18 @@ public class AccountServiceTest {
         secondTestAccount.setUser(testUser);
         secondTestAccount.setIsDelete(0);
         secondTestAccount.setAccountBalance(50);
+
+        testTransferSession = new TransferSession();
+        testTransferSession.setSendingAccount(firstTestAccount);
+        testTransferSession.setReceivingAccount(secondTestAccount);
+        testTransferSession.setTransferAmount(0);
+        testTransferSession.setTransferFinished(true);
     }
 
     @Test
     public void shouldUpdateAccountBalance() {
         double expectedAccountBalance = 100;
+
 
         Mockito.when(accountRepository.save(any(AccountEntity.class))).thenReturn(firstTestAccount);
 
@@ -76,50 +82,61 @@ public class AccountServiceTest {
 
     @Test
     public void shouldReduceAccountBalance() {
-        double amountReduction = 100;
+        testTransferSession.setTransferAmount(100);
 
         Mockito.when(accountRepository.save(any(AccountEntity.class))).thenReturn(firstTestAccount);
 
-        Assertions.assertTrue(accountService.reductionAccountBalances(firstTestAccount, amountReduction));
+        Assertions.assertTrue(accountService.reductionAccountBalances(testTransferSession));
     }
 
     @Test
     public void shouldNotReduceAccountBalance() {
-        double amountReduction = 300;
+        testTransferSession.setTransferAmount(300);
 
         Mockito.when(accountRepository.save(any(AccountEntity.class))).thenReturn(firstTestAccount);
 
-        Assertions.assertFalse(accountService.reductionAccountBalances(firstTestAccount, amountReduction));
+        Assertions.assertFalse(accountService.reductionAccountBalances(testTransferSession));
     }
 
     @Test
     public void shouldRaiseAccountBalance() {
-        double amountRaise = 100;
-        double expectedRaisedAccountBalance = 300;
+        double expectedRaisedAccountBalance = 150;
+        testTransferSession.setTransferAmount(100);
 
         Mockito.when(accountRepository.save(any(AccountEntity.class))).thenReturn(firstTestAccount);
 
         Assertions.assertEquals(expectedRaisedAccountBalance,
-                accountService.raisingAccountBalance(firstTestAccount, amountRaise).getAccountBalance());
+                accountService.raisingAccountBalance(testTransferSession).getAccountBalance());
     }
 
     @Test
     public void shouldTransferFundsBetweenAccounts() {
-        double transferAmount = 100;
+        testTransferSession.setTransferAmount(100);
 
         Mockito.when(accountRepository.save(firstTestAccount)).thenReturn(firstTestAccount);
         Mockito.when(accountRepository.save(secondTestAccount)).thenReturn(secondTestAccount);
 
-        Assertions.assertTrue(accountService.transferFundsBetweenAccounts(firstTestAccount, secondTestAccount, transferAmount));
+        Assertions.assertTrue(accountService.transferFundsBetweenAccounts(testTransferSession));
     }
 
     @Test
     public void shouldNotTransferFundsBetweenAccounts() {
-        double transferAmount = 300;
+        testTransferSession.setTransferAmount(300);
 
         Mockito.when(accountRepository.save(firstTestAccount)).thenReturn(firstTestAccount);
         Mockito.when(accountRepository.save(secondTestAccount)).thenReturn(secondTestAccount);
 
-        Assertions.assertFalse(accountService.transferFundsBetweenAccounts(firstTestAccount, secondTestAccount, transferAmount));
+        Assertions.assertFalse(accountService.transferFundsBetweenAccounts(testTransferSession));
+    }
+
+    @Test
+    public void shouldNotTransferFundsBetweenAccountsBecausetransferIsNotFinished() {
+        testTransferSession.setTransferAmount(100);
+        testTransferSession.setTransferFinished(false);
+
+        Mockito.when(accountRepository.save(firstTestAccount)).thenReturn(firstTestAccount);
+        Mockito.when(accountRepository.save(secondTestAccount)).thenReturn(secondTestAccount);
+
+        Assertions.assertFalse(accountService.transferFundsBetweenAccounts(testTransferSession));
     }
 }

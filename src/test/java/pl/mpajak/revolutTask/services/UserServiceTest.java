@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.mpajak.revolutTask.models.Services.UserService;
-import pl.mpajak.revolutTask.models.Services.UserSession;
+import pl.mpajak.revolutTask.models.Services.TransferSession;
 import pl.mpajak.revolutTask.models.entitis.UserEntity;
 import pl.mpajak.revolutTask.models.repositoris.UserRepository;
 
@@ -25,7 +25,7 @@ public class UserServiceTest {
     @Mock
     UserRepository userRepository;
     @Mock
-    UserSession userSession;
+    TransferSession userSession;
     @InjectMocks
     UserService userService;
     @Autowired

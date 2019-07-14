@@ -4,7 +4,6 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.mpajak.revolutTask.models.entitis.AccountEntity;
 import pl.mpajak.revolutTask.models.entitis.UserEntity;
 import pl.mpajak.revolutTask.models.repositoris.UserRepository;
 
@@ -18,7 +17,7 @@ public class UserService {
     UserRepository userRepository;
 
     @Autowired
-    UserSession userSession;
+    TransferSession userSession;
 
     public Iterable<UserEntity> getAllUsers() {
         return userRepository.findAll();

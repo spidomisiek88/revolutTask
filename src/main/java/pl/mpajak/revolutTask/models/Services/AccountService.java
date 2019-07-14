@@ -25,33 +25,38 @@ public class AccountService {
     }
 
     @Transactional
-    public boolean transferFundsBetweenAccounts(AccountEntity sendingAccount, AccountEntity receivingAccount, double transferAmount) {
-
-        if (!reductionAccountBalances(sendingAccount, transferAmount))
+    public boolean transferFundsBetweenAccounts(TransferSession transferSession) {
+        if (!transferSession.isTransferFinished())
             return false;
-        raisingAccountBalance(receivingAccount, transferAmount);
+
+        transferSession.setTransferFinished(false);
+
+        if (!reductionAccountBalances(transferSession))
+            return false;
+        raisingAccountBalance(transferSession);
+
+        transferSession.setTransferFinished(true);
+        return true;
+    }
+
+    @Transactional
+    public boolean reductionAccountBalances(TransferSession transferSession) {
+
+        if (transferSession.getTransferAmount() > transferSession.getSendingAccount().getAccountBalance())
+            return false;
+
+        double reductionedAccountBalances = transferSession.getSendingAccount().getAccountBalance() - transferSession.getTransferAmount();
+        updateAccountBalance(transferSession.getSendingAccount(), reductionedAccountBalances);
 
         return true;
     }
 
     @Transactional
-    public boolean reductionAccountBalances(AccountEntity accountEntityToReductioning, double amountReduction) {
+    public AccountEntity raisingAccountBalance(TransferSession transferSession) {
 
-        if (amountReduction > accountEntityToReductioning.getAccountBalance())
-            return false;
+        double raisedAccountBalances = transferSession.getReceivingAccount().getAccountBalance() + transferSession.getTransferAmount();
 
-        double reductionedAccountBalances = accountEntityToReductioning.getAccountBalance() - amountReduction;
-        updateAccountBalance(accountEntityToReductioning, reductionedAccountBalances);
-
-        return true;
-    }
-
-    @Transactional
-    public AccountEntity raisingAccountBalance(AccountEntity accountEntityToRaising, double amountRaise) {
-
-        double raisedAccountBalances = accountEntityToRaising.getAccountBalance() + amountRaise;
-
-        return updateAccountBalance(accountEntityToRaising, raisedAccountBalances);
+        return updateAccountBalance(transferSession.getReceivingAccount(), raisedAccountBalances);
     }
 
     @Transactional

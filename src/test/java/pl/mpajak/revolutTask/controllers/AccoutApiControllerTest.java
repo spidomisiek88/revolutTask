@@ -13,12 +13,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.mpajak.revolutTask.models.Services.AccountService;
-import pl.mpajak.revolutTask.models.Services.UserSession;
+import pl.mpajak.revolutTask.models.Services.TransferSession;
 import pl.mpajak.revolutTask.models.entitis.AccountEntity;
 import pl.mpajak.revolutTask.models.entitis.UserEntity;
 import pl.mpajak.revolutTask.models.repositoris.AccountRepository;
-
-import java.util.ArrayList;
 
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -32,7 +30,7 @@ public class AccoutApiControllerTest {
     @Mock
     AccountRepository accountRepository;
     @Mock
-    UserSession userSession;
+    TransferSession userSession;
     @InjectMocks
     AccountService accountService;
     @Autowired

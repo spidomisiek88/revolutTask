@@ -1,11 +1,13 @@
 package pl.mpajak.revolutTask.controlers;
 
-import com.google.gson.Gson;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import pl.mpajak.revolutTask.models.Services.AccountService;
+import pl.mpajak.revolutTask.models.Services.TransferSession;
 import pl.mpajak.revolutTask.models.entitis.AccountEntity;
 
 import java.util.Arrays;
@@ -16,10 +18,12 @@ import java.util.Optional;
 public class AccountApiController {
 
     final AccountService accountService;
+    TransferSession transferSession;
 
     @Autowired
     public AccountApiController(AccountService accountService) {
         this.accountService = accountService;
+        this.transferSession = new TransferSession();
     }
 
     @GetMapping(value = "/accounts", produces = "application/json")
@@ -62,8 +66,11 @@ public class AccountApiController {
         if (!optionalSendingAccountEntity.isPresent() || !optionalReceivingAccountEntity.isPresent())
             return ResponseEntity.notFound().build();
 
-        accountService.transferFundsBetweenAccounts(optionalSendingAccountEntity.get(),
-                optionalReceivingAccountEntity.get(), transferAmount);
+        transferSession.setSendingAccount(optionalSendingAccountEntity.get());
+        transferSession.setReceivingAccount(optionalReceivingAccountEntity.get());
+        transferSession.setTransferAmount(transferAmount);
+
+        accountService.transferFundsBetweenAccounts(transferSession);
 
         Iterable<AccountEntity> changedAccounts =
                 Arrays.asList(optionalSendingAccountEntity.get(), optionalReceivingAccountEntity.get());
